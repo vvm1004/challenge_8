@@ -1,0 +1,99 @@
+# 💬 Challenge: Fullstack Chat App with JWT Authentication and Realtime Messaging
+
+## 🎯 Objective
+
+Build a basic chat application that includes:
+
+- User login and authentication using JWT (handled on the backend using ExpressJS or NestJS).
+- Realtime chat interface using Socket.IO.
+- Support for saving and displaying chat history.
+
+---
+
+## ✨ Core Features
+
+### 1. Login / Authentication with JWT
+
+- Users log in with email and password.
+- Backend returns an access token in JWT format.
+- Frontend stores the token in localStorage or sends via HTTP-only cookie.
+- All protected APIs require the token in the Authorization header.
+
+### 2. Online Users List
+
+- After logging in, users see a list of currently online users.
+- The list updates in real time using Socket.IO.
+
+### 3. Realtime 1-on-1 Chat
+
+- Users can select another user to open a 1-on-1 chat window.
+- Messages are sent and received instantly via Socket.IO.
+- Messages display sender name, content, and timestamp.
+
+### 4. Message Storage & History
+
+- Messages are saved to the database.
+- Reloading or reopening a conversation loads message history via API.
+
+---
+
+## 🏗️ Suggested Architecture
+
+### 🔧 Backend (ExpressJS or NestJS)
+
+#### Authentication:
+- `POST /api/login` and `POST /api/register`
+- JWT middleware or NestJS AuthGuard
+
+#### APIs:
+- `GET /api/users/online`: Get list of online users
+- `GET /api/messages/:receiverId`: Get message history
+
+#### Socket.IO Events:
+- `join`: When a user connects
+- `message`: Sending a message
+- `receive_message`: Receiving a message
+
+---
+
+### Database Schema
+
+#### Users
+- `id`
+- `name`
+- `email`
+- `password` (hashed)
+
+#### Messages
+- `id`
+- `senderId`
+- `receiverId`
+- `message`
+- `timestamp`
+
+---
+
+### 🖥️ Frontend (React.js)
+
+- Login and Register pages
+- After login: connect to the Socket.IO server
+
+#### Main interface:
+- Sidebar: list of online users
+- ChatBox: 1-on-1 messaging
+
+#### Tech:
+- Use Axios for API calls
+- Use Socket.IO Client for realtime communication
+- Style using Tailwind CSS or Ant Design
+
+---
+
+## 🛠 Technical Requirements
+
+- JWT-protected APIs
+- Socket.IO authentication using token (via auth or handshake headers)
+- React Hooks: `useState`, `useEffect`, `useContext`, `useRef`
+- Modular component structure:
+  - `Sidebar`, `ChatBox`, `MessageList`, `LoginForm`, `RegisterForm`
+- Optimistic UI: show message in chat immediately after sending (no wait for server ack)
