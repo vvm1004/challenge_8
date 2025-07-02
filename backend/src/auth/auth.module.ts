@@ -16,7 +16,7 @@ import * as ms from 'ms';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: ms(configService.get<string>('JWT_ACCESS_EXPIRE')) / 1000,
+          expiresIn: (ms(configService.get<string>('JWT_ACCESS_EXPIRE')) / 1000) || '16h',
         },
       }),
       inject: [ConfigService],

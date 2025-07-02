@@ -51,9 +51,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Create an Account</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full sm:max-w-md">
+        <h2 className="text-lg sm:text-2xl font-semibold mb-6 text-center">Create an Account</h2>
 
         <Input
           placeholder="Full Name"
@@ -87,5 +87,6 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+
   )
 }

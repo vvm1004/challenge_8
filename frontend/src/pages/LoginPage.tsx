@@ -56,9 +56,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Sign In</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full sm:max-w-md">
+        <h2 className="text-lg sm:text-2xl font-semibold mb-6 text-center">Sign In</h2>
         <Input
           placeholder="Email"
           type="email"
@@ -73,7 +73,7 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="mb-6"
         />
-        <Button className="w-full" onClick={handleLogin} disabled={loading} >
+        <Button className="w-full" onClick={handleLogin} disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </Button>
 

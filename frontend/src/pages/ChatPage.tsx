@@ -1,34 +1,15 @@
-import { useEffect, useState } from "react"
-import { ChatBox } from "@/components/ChatBox"
-import { SideBar } from "@/components/SideBar"
+
+import { useState } from "react"
+import { ChatSidebar } from "@/components/ChatSideBar"
+import { ChatWindow } from "@/components/ChatWindow"
 
 export default function ChatPage() {
-  const [onlineUsers, setOnlineUsers] = useState([])
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
-  const [messages, setMessages] = useState([])
-
-  // TODO: Connect socket, fetch online users, handle messages
-
-  const handleSendMessage = (msg: string) => {
-    // TODO: emit message via socket
-    // const newMsg = {
-    //   sender: "You",
-    //   content: msg,
-    //   timestamp: new Date().toISOString(),
-    // }
-    // setMessages((prev) => [...prev, newMsg])
-  }
+  const [selectedUserId, setSelectedUserId] = useState("jane-doe")
 
   return (
-    <div className="flex h-screen">
-      <SideBar users={onlineUsers} currentUserId="me" onSelectUser={setSelectedUserId} />
-      <div className="flex-1">
-        {selectedUserId ? (
-          <ChatBox messages={messages} onSend={handleSendMessage} />
-        ) : (
-          <div className="h-full flex items-center justify-center text-gray-500">Select a user to start chatting</div>
-        )}
-      </div>
+    <div className="flex h-[600px] w-[900px] border rounded-lg shadow-md mx-auto my-10 overflow-hidden bg-white">
+      <ChatSidebar selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId} />
+      <ChatWindow selectedUserId={selectedUserId} />
     </div>
   )
 }
