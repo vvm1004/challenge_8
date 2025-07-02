@@ -20,3 +20,8 @@ export const fetchAccountAPI = async () => {
   await sleep(1500);
   return axios.get<IBackendRes<IFetchAccount>>(urlBackend);
 };
+
+export const getUsersAPI = () => {
+  const urlBackend = `/api/users`;
+  return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
+};

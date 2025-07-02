@@ -1,59 +1,57 @@
-import { useEffect, useRef, useState } from "react"
-import { users, messages } from "./data"
+// components/ChatWindow.tsx
+
+import { useEffect, useRef, useState } from "react";
 import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
-  ChatBubbleTimestamp,
-  ChatBubbleAction,
-  ChatBubbleActionWrapper
-} from "@/components/ui/chat/chat-bubble"
-import { ThumbsUp, Smile } from "lucide-react"
-import EmojiPicker, { type EmojiClickData } from "emoji-picker-react"
+  ChatBubbleTimestamp
+} from "@/components/ui/chat/chat-bubble";
+import { ThumbsUp, Smile } from "lucide-react";
+import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
+import { stringToColor, getInitials } from "@/helper";
 
 interface Props {
-  selectedUserId: string
+  selectedUser: IUser;
 }
 
-export function ChatWindow({ selectedUserId }: Props) {
-  const user = users.find((u) => u.id === selectedUserId)
-  const chatBoxRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+export function ChatWindow({ selectedUser }: Props) {
+  const chatBoxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const [chatMessages, setChatMessages] = useState(messages[selectedUserId] || [])
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleSend = (text: string) => {
-    const newMsg = {
-      id: Date.now().toString(),
+    const newMsg: IMessage = {
+      _id: Date.now().toString(),
       senderId: "me",
-      receiverId: selectedUserId,
+      receiverId: selectedUser._id,
       message: text,
       createdAt: new Date().toISOString(),
-    }
-    setChatMessages((prev) => [...prev, newMsg])
-  }
+    };
+    setChatMessages((prev) => [...prev, newMsg]);
+  };
 
   useEffect(() => {
-    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight)
-  }, [chatMessages])
+    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
+  }, [chatMessages]);
 
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     if (inputRef.current) {
-      const cursor = inputRef.current.selectionStart
-      const currentText = inputRef.current.value
+      const cursor = inputRef.current.selectionStart;
+      const currentText = inputRef.current.value;
       const newText =
-        currentText.slice(0, cursor) + emojiData.emoji + currentText.slice(cursor)
-      inputRef.current.value = newText
-      inputRef.current.focus()
-
-      setShowEmojiPicker(false)
+        currentText.slice(0, cursor) + emojiData.emoji + currentText.slice(cursor);
+      inputRef.current.value = newText;
+      inputRef.current.focus();
+      setShowEmojiPicker(false);
     }
-  }
+  };
 
   const handleLikeClick = () => {
-    handleSend("👍")
-  }
+    handleSend("👍");
+  };
 
   return (
     <div className="flex flex-col w-2/3 h-full">
@@ -61,12 +59,12 @@ export function ChatWindow({ selectedUserId }: Props) {
       <div className="flex items-center gap-2 p-4 border-b">
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
-          style={{ backgroundColor: user?.color }}
+          style={{ backgroundColor: stringToColor(selectedUser.email) }}
         >
-          {user?.name[0]}
+          {getInitials(selectedUser.name)}
         </div>
         <div>
-          <p className="font-medium">{user?.name}</p>
+          <p className="font-medium">{selectedUser.name}</p>
           <p className="text-xs text-muted-foreground">Active 2 mins ago</p>
         </div>
       </div>
@@ -74,25 +72,24 @@ export function ChatWindow({ selectedUserId }: Props) {
       {/* Messages */}
       <div ref={chatBoxRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {chatMessages.map((msg) => {
-          const isMe = msg.senderId === "me"
-          const sender = isMe ? { name: "You", color: "#18181B" } : user
-          const bgColor = isMe ? "bg-[#18181B] text-white" : "bg-muted"
+          const isMe = msg.senderId === "me";
+          const bgColor = isMe ? "bg-[#18181B] text-white" : "bg-muted";
 
           return (
-            <div className={`flex ${isMe ? "justify-end" : "justify-start"}`} key={msg.id}>
+            <div
+              key={msg._id}
+              className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+            >
               <div className="flex items-end gap-2 max-w-[80%]">
                 {!isMe && (
                   <ChatBubbleAvatar
-                    fallback={sender?.name[0]}
+                    fallback={getInitials(selectedUser.name)}
                     className="w-8 h-8"
                   />
                 )}
                 <ChatBubble variant={isMe ? "sent" : "received"}>
                   {isMe && (
-                    <ChatBubbleAvatar
-                      fallback="Y"
-                      className="w-8 h-8"
-                    />
+                    <ChatBubbleAvatar fallback="Y" className="w-8 h-8" />
                   )}
                   <div className="relative">
                     <ChatBubbleMessage className={`${bgColor} px-4 py-3 rounded-lg`}>
@@ -108,7 +105,7 @@ export function ChatWindow({ selectedUserId }: Props) {
                 </ChatBubble>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -123,11 +120,11 @@ export function ChatWindow({ selectedUserId }: Props) {
               className="flex-1 resize-none bg-transparent outline-none text-sm placeholder:text-muted-foreground"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault()
-                  const val = inputRef.current?.value.trim()
+                  e.preventDefault();
+                  const val = inputRef.current?.value.trim();
                   if (val) {
-                    handleSend(val)
-                    if (inputRef.current) inputRef.current.value = ""
+                    handleSend(val);
+                    if (inputRef.current) inputRef.current.value = "";
                   }
                 }
               }}
@@ -141,7 +138,7 @@ export function ChatWindow({ selectedUserId }: Props) {
             </button>
           </div>
 
-          {/* Like Button (bên ngoài ô input) */}
+          {/* Like Button */}
           <button
             className="ml-3 text-muted-foreground hover:text-primary cursor-pointer"
             onClick={handleLikeClick}
@@ -159,5 +156,5 @@ export function ChatWindow({ selectedUserId }: Props) {
         )}
       </div>
     </div>
-  )
+  );
 }
