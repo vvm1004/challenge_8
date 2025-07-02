@@ -1,6 +1,6 @@
 
 import { useState } from "react"
-import { ChatSidebar } from "@/components/ChatSideBar"
+import { ChatSidebar } from "@/components/ChatSidebar"
 import { ChatWindow } from "@/components/ChatWindow"
 
 export default function ChatPage() {

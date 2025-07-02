@@ -103,12 +103,6 @@ export function ChatWindow({ selectedUserId }: Props) {
                         timestamp={new Date(msg.createdAt).toLocaleTimeString()}
                         className="text-xs"
                       />
-                      {/* <ChatBubbleActionWrapper variant="sent">
-                        <ChatBubbleAction
-                          icon={<ThumbsUp className="w-4 h-4" />}
-                          onClick={() => console.log("Liked", msg.id)}
-                        />
-                      </ChatBubbleActionWrapper> */}
                     </div>
                   </div>
                 </ChatBubble>
