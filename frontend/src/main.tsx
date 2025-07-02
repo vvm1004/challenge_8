@@ -5,11 +5,18 @@ import LoginPage from './pages/LoginPage.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ChatPage from './pages/ChatPage.tsx'
 import RegisterPage from './pages/RegisterPage.tsx'
+import { AppProvider } from '@/components/context/app.context.tsx'
+import ProtectedRoute from '@/components/auth/index.tsx'
+import { Toaster } from './components/ui/sonner.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <ChatPage />,
+    element: (
+      <ProtectedRoute>
+        <ChatPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",
@@ -24,6 +31,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-   <RouterProvider router={router} />
+    <AppProvider>
+      <RouterProvider router={router} />
+      <Toaster />
+    </AppProvider>
   </StrictMode>,
 )

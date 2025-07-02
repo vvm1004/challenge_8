@@ -1,0 +1,22 @@
+import axios from "@/services/axios.customize";
+
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+
+export const loginAPI = async (username: string, password: string) => {
+  const urlBackend = "/api/auth/login";
+  await sleep(3000); 
+  return axios.post<IBackendRes<ILogin>>(urlBackend, { username, password });
+};
+
+
+export const registerAPI = async (name: string, email: string, password: string) => {
+  const urlBackend = "/api/auth/register";
+  return axios.post<IBackendRes<IRegister>>(urlBackend, { name, email, password });
+};
+
+export const fetchAccountAPI = async () => {
+  const urlBackend = "/api/auth/account";
+  await sleep(1500);
+  return axios.get<IBackendRes<IFetchAccount>>(urlBackend);
+};

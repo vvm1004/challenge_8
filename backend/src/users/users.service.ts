@@ -27,7 +27,7 @@ export class UsersService {
     const hashPassword = this.getHashPassword(password);
     const isExist = await this.userModel.findOne({ email });
     if (isExist) {
-      throw new BadRequestException(`Email đã tồn tại`);
+      throw new BadRequestException(`Email already exists`);
     }
     //fetch user role
     let newRegister = await this.userModel.create({
