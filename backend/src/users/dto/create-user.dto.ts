@@ -14,7 +14,7 @@ import mongoose from 'mongoose';
 
 export class CreateUserDto {
   @IsNotEmpty({
-    message: 'Name không được để trống',
+    message: 'Name can not be empty',
   })
   @ApiProperty({
     example: 'Minh',
@@ -22,9 +22,9 @@ export class CreateUserDto {
   })
   name: string;
 
-  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  @IsEmail({}, { message: 'Email can not be empty' })
   @IsNotEmpty({
-    message: 'Email không được để trống',
+    message: 'Email can not be empty',
   })
   @ApiProperty({
     example: 'aaa@gmail.com',
@@ -33,7 +33,7 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty({
-    message: 'Password không được để trống',
+    message: 'Password can not be empty',
   })
   @ApiProperty({
     example: '123456',
@@ -45,7 +45,7 @@ export class CreateUserDto {
 
 export class RegisterUserDto {
   @IsNotEmpty({
-    message: 'Name không được để trống',
+    message: 'Name can not be empty',
   })
   @ApiProperty({
     example: 'Minh',
@@ -53,9 +53,9 @@ export class RegisterUserDto {
   })
   name: string;
 
-  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  @IsEmail({}, { message: 'Email is not valid' })
   @IsNotEmpty({
-    message: 'Email không được để trống',
+    message: 'Email can not be empty',
   })
   @ApiProperty({
     example: 'aaa@gmail.com',
@@ -64,7 +64,7 @@ export class RegisterUserDto {
   email: string;
 
   @IsNotEmpty({
-    message: 'Password không được để trống',
+    message: 'Password can not be empty',
   })
   @ApiProperty({
     example: '123456',
