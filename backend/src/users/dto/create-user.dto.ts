@@ -17,7 +17,7 @@ export class CreateUserDto {
     message: 'Name không được để trống',
   })
   @ApiProperty({
-    example: 'ssss',
+    example: 'Minh',
     description: 'name',
   })
   name: string;
@@ -48,7 +48,7 @@ export class RegisterUserDto {
     message: 'Name không được để trống',
   })
   @ApiProperty({
-    example: 'ssss',
+    example: 'Minh',
     description: 'name',
   })
   name: string;
