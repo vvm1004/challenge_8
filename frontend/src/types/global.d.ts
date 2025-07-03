@@ -51,12 +51,17 @@ declare global {
     }
 
     export interface IMessage {
-        _id: string;             // Có thể là Date.now().toString() hoặc UUID
-        senderId: string;       // ID của người gửi (vd: "me" hoặc user._id)
-        receiverId: string;     // ID của người nhận
-        message: string;        // Nội dung tin nhắn (text hoặc emoji)
-        createdAt: string;      // Thời gian gửi ISO string
+        _id: string;             
+        senderId: string;       
+        receiverId: string;    
+        message: string;        
+        createdAt: string;      
     }
+
+    export interface IOnlineUser
+     {
+        online: string[] 
+     }
 
 
 }

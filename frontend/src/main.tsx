@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage.tsx'
 import { AppProvider } from '@/components/context/app.context.tsx'
 import ProtectedRoute from '@/components/auth/index.tsx'
 import { Toaster } from './components/ui/sonner.tsx'
+import { SocketProvider } from './components/context/socket.context.tsx'
 
 const router = createBrowserRouter([
   {
@@ -31,9 +32,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppProvider>
-      <RouterProvider router={router} />
-      <Toaster />
-    </AppProvider>
+    <SocketProvider>
+      <AppProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AppProvider>
+    </SocketProvider>
   </StrictMode>,
 )

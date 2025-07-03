@@ -25,3 +25,7 @@ export const getUsersAPI = () => {
   const urlBackend = `/api/users`;
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
 };
+
+export const getOnlineUsersAPI = () => {
+  return axios.get<IBackendRes<IOnlineUser>>("/api/users/online");
+};

@@ -32,7 +32,6 @@ export class AuthController {
   @ResponseMessage("Get user information")
   @Get('/account')
   async handleGetAccount(@User() user: IUser) {
-    console.log(user)
     return { user }
   }
 

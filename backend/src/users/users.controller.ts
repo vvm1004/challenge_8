@@ -5,10 +5,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from './users.interface';
+import { ChatGateway } from 'src/chat/chat.gateway';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly chatGateway: ChatGateway
+  ) {}
 
 
 
@@ -41,6 +45,11 @@ export class UsersController {
     return this.usersService.findAll(+currentPage, +limit, qs);
   }
 
+  @Get('online')
+  getOnlineUsers() {
+    const onlineUsers = this.chatGateway.getOnlineUsers();
+    return { online: onlineUsers }; 
+  }
 
  
 }
