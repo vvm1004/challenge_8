@@ -8,12 +8,13 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { MessagesService } from 'src/messages/messages.service';
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  // constructor(private readonly chatService: ChatService) {}
+  constructor(private readonly messagesService: MessagesService) { }
 
   private userSockets = new Map<string, string>(); // userId -> socketId
 
@@ -42,4 +43,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   getOnlineUsers(): string[] {
     return Array.from(this.userSockets.keys());
   }
+
+  @SubscribeMessage('send_message')
+  async handleSendMessage(
+    @MessageBody() data: { senderId: string; receiverId: string; message: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const message = await this.messagesService.sendMessage(
+      {
+        receiverId: data.receiverId,
+        message: data.message,
+      },
+      { _id: data.senderId } as any,
+    );
+    console.log(`Message from ${data.senderId} to ${data.receiverId}: ${data.message}`);
+
+    // Emit to receiver
+    this.server.to(data.receiverId).emit('receive_message', message);
+    this.server.to(data.senderId).emit('receive_message', message);
+  }
 }
+
+
+

@@ -9,7 +9,7 @@ export class CreateMessageDto {
   })
   @IsMongoId({ message: 'ReceiverId must be a valid Mongo ID' })
   @IsNotEmpty({ message: 'ReceiverId can not be empty' })
-  receiverId: mongoose.Types.ObjectId
+  receiverId: string
 
   @ApiProperty({
     description: 'Message content',

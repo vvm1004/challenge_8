@@ -32,11 +32,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <SocketProvider>
-      <AppProvider>
+    <AppProvider>
+      <SocketProvider>
         <RouterProvider router={router} />
         <Toaster />
-      </AppProvider>
-    </SocketProvider>
+      </SocketProvider>
+    </AppProvider>
   </StrictMode>,
 )

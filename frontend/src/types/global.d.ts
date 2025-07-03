@@ -55,7 +55,8 @@ declare global {
         senderId: string;       
         receiverId: string;    
         message: string;        
-        createdAt: string;      
+        createdAt: string;
+        updatedAt: string; 
     }
 
     export interface IOnlineUser

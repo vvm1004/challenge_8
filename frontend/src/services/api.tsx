@@ -26,6 +26,12 @@ export const getUsersAPI = () => {
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
 };
 
-export const getOnlineUsersAPI = () => {
-  return axios.get<IBackendRes<IOnlineUser>>("/api/users/online");
+export const getOnlineUsersAPI = () => {  
+  const urlBackend = `/api/users/online`;
+  return axios.get<IBackendRes<IOnlineUser>>(urlBackend);
+};
+
+export const getMessagesAPI = (receiverId: string) => {
+  const urlBackend = `/api/messages/${receiverId}`;
+  return axios.get<IBackendRes<IMessage[]>>(urlBackend);
 };

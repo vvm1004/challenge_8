@@ -11,11 +11,11 @@ import { IUser } from 'src/users/users.interface';
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
-  @Post()
-  @ResponseMessage("Send Message !")
-  sendMessage(@Body() createMessageDto: CreateMessageDto, @User() user: IUser) {
-    return this.messagesService.sendMessage(createMessageDto, user);
-  }
+  // @Post()
+  // @ResponseMessage("Send Message !")
+  // sendMessage(@Body() createMessageDto: CreateMessageDto, @User() user: IUser) {
+  //   return this.messagesService.sendMessage(createMessageDto, user);
+  // }
   
   @Get(':receiverId')
   async getMessages(@User() user: IUser, @Param('receiverId') receiverId: string) {

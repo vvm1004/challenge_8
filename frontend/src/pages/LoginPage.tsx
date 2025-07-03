@@ -36,7 +36,6 @@ export default function LoginPage() {
 
       if (response?.data) {
         localStorage.setItem("access_token", response.data.access_token)
-        localStorage.setItem("user", JSON.stringify(response.data.user))
         setIsAuthenticated(true)
         setUser(response.data.user)
         toast.success("Login successful!")

@@ -1,57 +1,103 @@
-// components/ChatWindow.tsx
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react"
 import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
-  ChatBubbleTimestamp
-} from "@/components/ui/chat/chat-bubble";
-import { ThumbsUp, Smile } from "lucide-react";
-import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
-import { stringToColor, getInitials } from "@/helper";
+  ChatBubbleTimestamp,
+} from "@/components/ui/chat/chat-bubble"
+import { ThumbsUp, Smile } from "lucide-react"
+import EmojiPicker, { type EmojiClickData } from "emoji-picker-react"
+import { stringToColor, getInitials } from "@/helper"
+import { getMessagesAPI } from "@/services/api"
+import { useSocket } from "./context/socket.context"
+import { useCurrentApp } from "./context/app.context"
 
 interface Props {
-  selectedUser: IUser;
+  selectedUser: IUser
 }
 
 export function ChatWindow({ selectedUser }: Props) {
-  const chatBoxRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const chatBoxRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [chatMessages, setChatMessages] = useState<IMessage[]>([])
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
-  const handleSend = (text: string) => {
-    const newMsg: IMessage = {
-      _id: Date.now().toString(),
-      senderId: "me",
-      receiverId: selectedUser._id,
-      message: text,
-      createdAt: new Date().toISOString(),
-    };
-    setChatMessages((prev) => [...prev, newMsg]);
-  };
+  const { socket } = useSocket()
+  const { user } = useCurrentApp();
 
+  // Load tin nhắn cũ khi đổi user
   useEffect(() => {
-    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight);
-  }, [chatMessages]);
+    const fetchMessages = async () => {
+      const res = await getMessagesAPI(selectedUser._id)
+      setChatMessages(res.data || [])
+    }
+
+    if (selectedUser?._id) {
+      fetchMessages()
+    }
+  }, [selectedUser])
+
+  // Scroll xuống cuối khi có tin nhắn
+  useEffect(() => {
+    chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight)
+  }, [chatMessages])
+
+  // Nhận tin nhắn realtime
+  useEffect(() => {
+    if (!socket) return
+
+    const handleReceive = (message: IMessage) => {
+      const isForThisChat =
+        user &&
+        (
+          (message.senderId === selectedUser._id && message.receiverId === user._id) ||
+          (message.senderId === user._id && message.receiverId === selectedUser._id)
+        )
+
+      if (isForThisChat) {
+        setChatMessages((prev) => [...prev, message])
+      }
+    }
+
+    socket.on("receive_message", handleReceive)
+
+    return () => {
+      socket.off("receive_message", handleReceive)
+    }
+  }, [socket, selectedUser])
+
+  // Gửi tin nhắn
+  const handleSend = (text: string) => {
+
+    if (!text.trim() || !user) return
+
+    const newMessage = {
+      receiverId: selectedUser._id,
+      message: text.trim(),
+      senderId: user._id,
+    }
+
+    socket?.emit("send_message", newMessage)
+    console.log("✅ sending message:", newMessage)
+
+  }
 
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     if (inputRef.current) {
-      const cursor = inputRef.current.selectionStart;
-      const currentText = inputRef.current.value;
+      const cursor = inputRef.current.selectionStart
+      const currentText = inputRef.current.value
       const newText =
-        currentText.slice(0, cursor) + emojiData.emoji + currentText.slice(cursor);
-      inputRef.current.value = newText;
-      inputRef.current.focus();
-      setShowEmojiPicker(false);
+        currentText.slice(0, cursor) + emojiData.emoji + currentText.slice(cursor)
+      inputRef.current.value = newText
+      inputRef.current.focus()
+      setShowEmojiPicker(false)
     }
-  };
+  }
 
   const handleLikeClick = () => {
-    handleSend("👍");
-  };
+    handleSend("👍")
+  }
 
   return (
     <div className="flex flex-col w-2/3 h-full">
@@ -65,21 +111,18 @@ export function ChatWindow({ selectedUser }: Props) {
         </div>
         <div>
           <p className="font-medium">{selectedUser.name}</p>
-          <p className="text-xs text-muted-foreground">Active 2 mins ago</p>
+          <p className="text-xs text-muted-foreground">Active recently</p>
         </div>
       </div>
 
       {/* Messages */}
       <div ref={chatBoxRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {chatMessages.map((msg) => {
-          const isMe = msg.senderId === "me";
-          const bgColor = isMe ? "bg-[#18181B] text-white" : "bg-muted";
+          const isMe = user ? msg.senderId === user._id : false
+          const bgColor = isMe ? "bg-[#18181B] text-white" : "bg-muted"
 
           return (
-            <div
-              key={msg._id}
-              className={`flex ${isMe ? "justify-end" : "justify-start"}`}
-            >
+            <div key={msg._id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
               <div className="flex items-end gap-2 max-w-[80%]">
                 {!isMe && (
                   <ChatBubbleAvatar
@@ -88,9 +131,7 @@ export function ChatWindow({ selectedUser }: Props) {
                   />
                 )}
                 <ChatBubble variant={isMe ? "sent" : "received"}>
-                  {isMe && (
-                    <ChatBubbleAvatar fallback="Y" className="w-8 h-8" />
-                  )}
+                  {isMe && <ChatBubbleAvatar fallback="Y" className="w-8 h-8" />}
                   <div className="relative">
                     <ChatBubbleMessage className={`${bgColor} px-4 py-3 rounded-lg`}>
                       {msg.message}
@@ -105,11 +146,11 @@ export function ChatWindow({ selectedUser }: Props) {
                 </ChatBubble>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
-      {/* Input area */}
+      {/* Input */}
       <div className="border-t p-4 relative">
         <div className="flex items-center w-full">
           <div className="relative flex items-center w-full rounded-full border px-4 py-2 bg-white dark:bg-zinc-900 shadow-sm">
@@ -120,11 +161,11 @@ export function ChatWindow({ selectedUser }: Props) {
               className="flex-1 resize-none bg-transparent outline-none text-sm placeholder:text-muted-foreground"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  const val = inputRef.current?.value.trim();
+                  e.preventDefault()
+                  const val = inputRef.current?.value.trim()
                   if (val) {
-                    handleSend(val);
-                    if (inputRef.current) inputRef.current.value = "";
+                    handleSend(val)
+                    if (inputRef.current) inputRef.current.value = ""
                   }
                 }
               }}
@@ -137,8 +178,6 @@ export function ChatWindow({ selectedUser }: Props) {
               <Smile className="w-5 h-5 cursor-pointer" />
             </button>
           </div>
-
-          {/* Like Button */}
           <button
             className="ml-3 text-muted-foreground hover:text-primary cursor-pointer"
             onClick={handleLikeClick}
@@ -148,7 +187,6 @@ export function ChatWindow({ selectedUser }: Props) {
           </button>
         </div>
 
-        {/* Emoji Picker */}
         {showEmojiPicker && (
           <div className="absolute bottom-[60px] left-4 z-50">
             <EmojiPicker onEmojiClick={handleEmojiClick} height={350} />
@@ -156,5 +194,5 @@ export function ChatWindow({ selectedUser }: Props) {
         )}
       </div>
     </div>
-  );
+  )
 }
