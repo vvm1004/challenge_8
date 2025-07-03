@@ -24,7 +24,7 @@ export default function ChatPage() {
     fetchUsers()
     fetchOnlineUsers()
 
-    const interval = setInterval(fetchOnlineUsers, 5000) // cập nhật mỗi 5s
+    const interval = setInterval(fetchOnlineUsers, 3000) // cập nhật mỗi 3s
 
     return () => clearInterval(interval)
   }, [])

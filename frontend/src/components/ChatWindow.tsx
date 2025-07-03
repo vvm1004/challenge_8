@@ -26,7 +26,6 @@ export function ChatWindow({ selectedUser }: Props) {
   const { socket } = useSocket()
   const { user } = useCurrentApp();
 
-  // Load tin nhắn cũ khi đổi user
   useEffect(() => {
     const fetchMessages = async () => {
       const res = await getMessagesAPI(selectedUser._id)
@@ -38,12 +37,10 @@ export function ChatWindow({ selectedUser }: Props) {
     }
   }, [selectedUser])
 
-  // Scroll xuống cuối khi có tin nhắn
   useEffect(() => {
     chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight)
   }, [chatMessages])
 
-  // Nhận tin nhắn realtime
   useEffect(() => {
     if (!socket) return
 
@@ -67,7 +64,6 @@ export function ChatWindow({ selectedUser }: Props) {
     }
   }, [socket, selectedUser])
 
-  // Gửi tin nhắn
   const handleSend = (text: string) => {
 
     if (!text.trim() || !user) return
@@ -79,8 +75,6 @@ export function ChatWindow({ selectedUser }: Props) {
     }
 
     socket?.emit("send_message", newMessage)
-    console.log("✅ sending message:", newMessage)
-
   }
 
   const handleEmojiClick = (emojiData: EmojiClickData) => {
