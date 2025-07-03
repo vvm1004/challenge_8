@@ -5,7 +5,7 @@ import {
   ChatBubbleMessage,
   ChatBubbleTimestamp,
 } from "@/components/ui/chat/chat-bubble"
-import { ThumbsUp, Smile } from "lucide-react"
+import { ThumbsUp, Smile, ArrowLeft } from "lucide-react"
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react"
 import { stringToColor, getInitials } from "@/helper"
 import { getMessagesAPI } from "@/services/api"
@@ -14,9 +14,12 @@ import { useCurrentApp } from "./context/app.context"
 
 interface Props {
   selectedUser: IUser
+  onBack?: () => void
+  isMobile?: boolean
+  isOnline?: boolean
 }
 
-export function ChatWindow({ selectedUser }: Props) {
+export function ChatWindow({ selectedUser, onBack, isMobile, isOnline }: Props) {
   const chatBoxRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -24,7 +27,7 @@ export function ChatWindow({ selectedUser }: Props) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   const { socket } = useSocket()
-  const { user } = useCurrentApp();
+  const { user } = useCurrentApp()
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -65,7 +68,6 @@ export function ChatWindow({ selectedUser }: Props) {
   }, [socket, selectedUser])
 
   const handleSend = (text: string) => {
-
     if (!text.trim() || !user) return
 
     const newMessage = {
@@ -94,9 +96,19 @@ export function ChatWindow({ selectedUser }: Props) {
   }
 
   return (
-    <div className="flex flex-col w-2/3 h-full">
+    <div className="flex flex-col w-full md:w-2/3 h-full">
       {/* Header */}
       <div className="flex items-center gap-2 p-4 border-b">
+        {isMobile && (
+          <button
+            onClick={onBack}
+            className="mr-2 text-primary hover:text-primary/80 transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
           style={{ backgroundColor: stringToColor(selectedUser.email) }}
@@ -105,7 +117,14 @@ export function ChatWindow({ selectedUser }: Props) {
         </div>
         <div>
           <p className="font-medium">{selectedUser.name}</p>
-          <p className="text-xs text-muted-foreground">Active recently</p>
+          {isOnline ? (
+            <span className="flex items-center text-xs text-green-600">
+              <span className="w-2.5 h-2.5 bg-green-500 rounded-full mr-1"></span>
+              Online
+            </span>
+          ) : (
+            <span className="text-xs text-muted-foreground">Offline</span>
+          )}
         </div>
       </div>
 

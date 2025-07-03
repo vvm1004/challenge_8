@@ -13,14 +13,14 @@ export function ChatSidebar({
   selectedUserId,
   setSelectedUserId,
   users,
-  onlineUserIds
+  onlineUserIds,
 }: Props) {
   return (
-    <aside className="w-1/3 border-r p-4">
+    <aside className="w-full md:w-1/3 border-r p-4">
       <h2 className="text-lg font-semibold mb-4">Chats ({users.length})</h2>
       <ScrollArea className="h-[calc(100%-2rem)]">
         {users.map((user) => {
-          const isOnline = onlineUserIds.includes(user._id)
+          const isOnline = onlineUserIds.includes(user._id);
 
           return (
             <div
@@ -47,9 +47,9 @@ export function ChatSidebar({
                 <p className="text-sm font-medium">{user.name}</p>
               </div>
             </div>
-          )
+          );
         })}
       </ScrollArea>
     </aside>
-  )
+  );
 }
