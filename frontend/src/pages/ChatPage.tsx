@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ChatSidebar } from "@/components/ChatSidebar"
-import { ChatWindow } from "@/components/ChatWindow"
+import { ChatBox } from "@/components/ChatBox"
 import { getUsersAPI, getOnlineUsersAPI } from "@/services/api"
 
 export default function ChatPage() {
@@ -59,7 +59,7 @@ export default function ChatPage() {
       )}
 
       {selectedUser && (!showSidebar || !isMobile) && (
-        <ChatWindow
+        <ChatBox
           selectedUser={selectedUser}
           onBack={() => setShowSidebar(true)}
           isMobile={isMobile}

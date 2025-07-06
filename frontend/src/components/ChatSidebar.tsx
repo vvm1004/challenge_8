@@ -16,9 +16,9 @@ export function ChatSidebar({
   onlineUserIds,
 }: Props) {
   return (
-    <aside className="w-full md:w-1/3 border-r p-4">
+    <aside className="flex flex-col w-full md:w-1/3 h-[100dvh] border-r p-4">
       <h2 className="text-lg font-semibold mb-4">Chats ({users.length})</h2>
-      <ScrollArea className="h-[calc(100%-2rem)]">
+      <ScrollArea className="flex-1 overflow-y-auto">
         {users.map((user) => {
           const isOnline = onlineUserIds.includes(user._id);
 
@@ -53,3 +53,4 @@ export function ChatSidebar({
     </aside>
   );
 }
+

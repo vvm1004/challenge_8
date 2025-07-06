@@ -33,7 +33,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('join_room')
+  @SubscribeMessage('join')
   handleJoinRoom(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
     this.userSockets.set(userId, client.id);
     client.join(userId);
@@ -44,7 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return Array.from(this.userSockets.keys());
   }
 
-  @SubscribeMessage('send_message')
+  @SubscribeMessage('message')
   async handleSendMessage(
     @MessageBody() data: { senderId: string; receiverId: string; message: string },
     @ConnectedSocket() client: Socket,
@@ -56,7 +56,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       },
       { _id: data.senderId } as any,
     );
-    console.log(`Message from ${data.senderId} to ${data.receiverId}: ${data.message}`);
 
     // Emit to receiver
     this.server.to(data.receiverId).emit('receive_message', message);

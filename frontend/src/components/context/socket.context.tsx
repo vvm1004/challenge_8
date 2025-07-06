@@ -32,7 +32,7 @@ export const SocketProvider = ({ children }: Props) => {
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
       setIsConnected(true);
-      socket.emit("join_room", user._id);
+      socket.emit("join", user._id);
     });
 
     socket.on("disconnect", () => {
