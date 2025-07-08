@@ -24,6 +24,11 @@ export const AppProvider = (props: TProps) => {
 
   useEffect(() => {
     const fetchAccount = async () => {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        setIsAppLoading(false);
+        return;
+      }
       try {
         const res = await fetchAccountAPI();
         if (res.data) {
@@ -31,15 +36,15 @@ export const AppProvider = (props: TProps) => {
           setIsAuthenticated(true);
         } else {
           const errorMsg = Array.isArray(res.message)
-          ? res.message[0]
-          : res.message;
+            ? res.message[0]
+            : res.message;
           console.error("Error fetching account info:", errorMsg);
         }
       } catch (error: any) {
         const errMsg =
           error?.response?.data?.message ||
           "An error occurred while fetching account info.";
-          console.error(errMsg);
+        console.error(errMsg);
       } finally {
         setIsAppLoading(false);
       }
