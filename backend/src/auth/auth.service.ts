@@ -41,15 +41,19 @@ export class AuthService {
       name,
       email,
     }
+    //update user with refresh token
     const refresh_token = this.createRefreshToken(payload)
     //update user with refresh token
     await this.usersService.updateUserToken(refresh_token, _id);
+    const refreshExpire = this.configService.get<string>('JWT_REFRESH_EXPIRE');
+    const maxAge = ms(refreshExpire as ms.StringValue);
 
-    //set refresh_token as cookies
+
     response.cookie("refresh_token", refresh_token, {
       httpOnly: true,
-      maxAge: ms(this.configService.get<string>("JWT_REFRESH_EXPIRE") as string)
+      maxAge: maxAge
     })
+
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -98,11 +102,13 @@ export class AuthService {
         //update user with refresh token
         await this.usersService.updateUserToken(refresh_token, _id.toString());
 
+        const refreshExpire = this.configService.get<string>('JWT_REFRESH_EXPIRE');
+        const maxAge = ms(refreshExpire as ms.StringValue);
         //set refresh_token as cookies
         response.clearCookie("refresh_token")
         response.cookie("refresh_token", refresh_token, {
           httpOnly: true,
-          maxAge: ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))
+          maxAge: maxAge
         })
         return {
           access_token: this.jwtService.sign(payload),
