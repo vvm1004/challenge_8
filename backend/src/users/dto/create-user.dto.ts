@@ -13,66 +13,21 @@ import {
 import mongoose from 'mongoose';
 
 export class CreateUserDto {
-  @IsNotEmpty({
-    message: 'Name can not be empty',
-  })
-  @ApiProperty({
-    example: 'Minh',
-    description: 'name',
-  })
-  name: string;
-
-  @IsEmail({}, { message: 'Email can not be empty' })
-  @IsNotEmpty({
-    message: 'Email can not be empty',
-  })
-  @ApiProperty({
-    example: 'aaa@gmail.com',
-    description: 'email',
-  })
-  email: string;
-
-  @IsNotEmpty({
-    message: 'Password can not be empty',
-  })
-  @ApiProperty({
-    example: '123456',
-    description: 'password',
-  })
-  password: string;
-
-}
-
-export class RegisterUserDto {
-  @IsNotEmpty({
-    message: 'Name can not be empty',
-  })
-  @ApiProperty({
-    example: 'Minh',
-    description: 'name',
-  })
+  @IsNotEmpty({ message: 'Name can not be empty' })
+  @ApiProperty({ example: 'Minh', description: 'name' })
   name: string;
 
   @IsEmail({}, { message: 'Email is not valid' })
-  @IsNotEmpty({
-    message: 'Email can not be empty',
-  })
-  @ApiProperty({
-    example: 'aaa@gmail.com',
-    description: 'email',
-  })
+  @IsNotEmpty({ message: 'Email can not be empty' })
+  @ApiProperty({ example: 'aaa@gmail.com', description: 'email' })
   email: string;
 
-  @IsNotEmpty({
-    message: 'Password can not be empty',
-  })
-  @ApiProperty({
-    example: '123456',
-    description: 'password',
-  })
+  @IsNotEmpty({ message: 'Password can not be empty' })
+  @ApiProperty({ example: '123456', description: 'password' })
   password: string;
- 
 }
+
+export class RegisterUserDto extends CreateUserDto {}
 
 export class UserLoginDto {
   @IsString()

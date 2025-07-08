@@ -24,12 +24,25 @@ export const AppProvider = (props: TProps) => {
 
   useEffect(() => {
     const fetchAccount = async () => {
-      const res = await fetchAccountAPI();
-      if (res.data) {
-        setUser(res.data.user);
-        setIsAuthenticated(true);
+      try {
+        const res = await fetchAccountAPI();
+        if (res.data) {
+          setUser(res.data.user);
+          setIsAuthenticated(true);
+        } else {
+          const errorMsg = Array.isArray(res.message)
+          ? res.message[0]
+          : res.message;
+          console.error("Error fetching account info:", errorMsg);
+        }
+      } catch (error: any) {
+        const errMsg =
+          error?.response?.data?.message ||
+          "An error occurred while fetching account info.";
+          console.error(errMsg);
+      } finally {
+        setIsAppLoading(false);
       }
-      setIsAppLoading(false);
     };
 
     fetchAccount();

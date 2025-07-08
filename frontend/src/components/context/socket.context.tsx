@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useCurrentApp } from "@/components/context/app.context"; // import context
+import { toast } from "sonner";
 
 interface ISocketContext {
   socket: Socket | null;
@@ -26,18 +27,42 @@ export const SocketProvider = ({ children }: Props) => {
   useEffect(() => {
     if (socketRef.current || !user || !isAuthenticated) return;
 
-    const socket = io(import.meta.env.VITE_BACKEND_URL);
+    const socket = io(import.meta.env.VITE_BACKEND_URL, {
+      auth: {
+        token: localStorage.getItem("access_token"),
+      },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
     socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
       setIsConnected(true);
-      socket.emit("join", user._id);
     });
 
-    socket.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
+    socket.on("disconnect", (reason) => {
+      console.log("❌ Socket disconnected:", reason);
       setIsConnected(false);
+      toast.error("Lost connection to chat server");
+    });
+
+    socket.on("reconnect_attempt", (attempt) => {
+      console.log(`🔁 Reconnecting... attempt ${attempt}`);
+      toast.warning(`Trying to reconnect... (${attempt})`);
+    });
+
+    socket.on("reconnect", (attempt) => {
+      console.log("✅ Reconnected on attempt", attempt);
+      toast.success("Reconnected to chat server");
+      socket.emit("join", user._id); // re-join room
+    });
+
+    socket.on("reconnect_failed", () => {
+      console.log("❌ Failed to reconnect");
+      toast.error("Failed to reconnect. Please refresh the page.");
     });
 
     return () => {

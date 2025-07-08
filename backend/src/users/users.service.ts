@@ -14,31 +14,37 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
 
-  ) {}
+  ) { }
 
   getHashPassword = (password: string) => {
     const salt = genSaltSync(10);
     const hash = hashSync(password, salt);
     return hash;
   };
-
   async register(user: RegisterUserDto) {
     const { name, email, password } = user;
+
     const hashPassword = this.getHashPassword(password);
     const isExist = await this.userModel.findOne({ email });
+
     if (isExist) {
       throw new BadRequestException(`Email already exists`);
     }
-    //fetch user role
-    let newRegister = await this.userModel.create({
+
+    const newRegister = await this.userModel.create({
       name,
       email,
-      password: hashPassword
+      password: hashPassword,
     });
-    return newRegister;
+
+    const userObj = newRegister.toObject();
+    delete userObj.password;
+
+    return userObj;
   }
 
-  
+
+
   findOneByUsername(username: string) {
     return this.userModel
       .findOne({
@@ -50,7 +56,7 @@ export class UsersService {
     return compareSync(password, hash);
   }
 
-  async findById(userId: string){
+  async findById(userId: string) {
     const user = await this.userModel.findById(userId).exec();
     if (!user) {
       throw new NotFoundException('User not found');
@@ -58,7 +64,7 @@ export class UsersService {
     return user;
   }
 
-    async findAll(currentPage: number, limit: number, qs: string) {
+  async findAll(currentPage: number, limit: number, qs: string) {
     const { filter, sort, projection, population } = aqp(qs);
     delete filter.current;
     delete filter.pageSize;
@@ -66,7 +72,7 @@ export class UsersService {
     let offset = (currentPage - 1) * limit;
     let defaultLimit = limit ? limit : 10;
 
-    const totalItems = (await this.userModel.find(filter)).length;
+    const totalItems = await this.userModel.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     const result = await this.userModel

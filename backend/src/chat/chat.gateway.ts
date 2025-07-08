@@ -1,3 +1,5 @@
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -14,13 +16,42 @@ import { MessagesService } from 'src/messages/messages.service';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  constructor(private readonly messagesService: MessagesService) { }
+  constructor(
+    private readonly messagesService: MessagesService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+
+  ) { }
 
   private userSockets = new Map<string, string>(); // userId -> socketId
 
-  handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+  private joinUserToRoom(userId: string, client: Socket) {
+    this.userSockets.set(userId, client.id);
+    client.join(userId);
+    console.log(`User ${userId} connected: ${client.id}`);
   }
+
+  async handleConnection(client: Socket) {
+    try {
+      const token = client.handshake.auth.token;
+      if (!token) {
+        client.disconnect();
+        return;
+      }
+
+      const payload = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+      });
+
+      const userId = payload._id;
+      this.joinUserToRoom(userId, client);
+
+    } catch (err) {
+      console.log("❌ Invalid token, disconnecting socket...");
+      client.disconnect();
+    }
+  }
+
 
   handleDisconnect(client: Socket) {
     const disconnectedUserId = [...this.userSockets.entries()].find(
@@ -35,9 +66,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join')
   handleJoinRoom(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
-    this.userSockets.set(userId, client.id);
-    client.join(userId);
-    console.log(`User ${userId} joined room`);
+     this.joinUserToRoom(userId, client);
   }
 
   getOnlineUsers(): string[] {

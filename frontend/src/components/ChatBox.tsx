@@ -11,6 +11,7 @@ import { stringToColor, getInitials } from "@/helper"
 import { getMessagesAPI } from "@/services/api"
 import { useSocket } from "./context/socket.context"
 import { useCurrentApp } from "./context/app.context"
+import { toast } from "sonner"
 
 interface Props {
   selectedUser: IUser
@@ -31,14 +32,30 @@ export function ChatBox({ selectedUser, onBack, isMobile, isOnline }: Props) {
 
   useEffect(() => {
     const fetchMessages = async () => {
-      const res = await getMessagesAPI(selectedUser._id)
-      setChatMessages(res.data || [])
+      try {
+        const res = await getMessagesAPI(selectedUser._id)
+
+        if (res?.data) {
+          setChatMessages(res.data || [])
+        } else {
+          const errorMsg = Array.isArray(res.message)
+            ? res.message[0]
+            : res.message
+          toast.error(errorMsg || "Failed to load messages.")
+        }
+      } catch (error: any) {
+        const errMsg =
+          error?.response?.data?.message || "An error occurred. Please try again."
+        toast.error(errMsg)
+      }
     }
 
+    setChatMessages([])
     if (selectedUser?._id) {
       fetchMessages()
     }
   }, [selectedUser])
+
 
   useEffect(() => {
     chatBoxRef.current?.scrollTo(0, chatBoxRef.current.scrollHeight)

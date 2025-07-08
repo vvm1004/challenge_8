@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ChatGateway } from './chat.gateway';
 import { MessagesModule } from 'src/messages/messages.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [MessagesModule],
+  imports: [MessagesModule, JwtModule],
   providers: [ChatGateway],
   exports: [ChatGateway], 
 })

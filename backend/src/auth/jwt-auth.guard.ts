@@ -30,7 +30,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         const request: Request = context.switchToHttp().getRequest()
         // You can throw an exception based on either "info" or "err" arguments
         if (err || !user) {
-            throw err || new UnauthorizedException("Token không hợp lệ hoặc hết hạn!!");
+            throw err || new UnauthorizedException("Token is invalid or expired!!");
         }
         return user;
     }

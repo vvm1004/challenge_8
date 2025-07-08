@@ -3,6 +3,6 @@ import { CreateUserDto } from './create-user.dto';
 import { IsNotEmpty } from 'class-validator';
 
 export class UpdateUserDto extends OmitType(CreateUserDto, ['password'] as const) {
-    @IsNotEmpty({message: '_id không được để trống'})
+    @IsNotEmpty({message: '_id cannot be empty'})
     _id: string
 }

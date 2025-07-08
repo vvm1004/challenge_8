@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { ChatSidebar } from "@/components/ChatSidebar"
 import { ChatBox } from "@/components/ChatBox"
 import { getUsersAPI, getOnlineUsersAPI } from "@/services/api"
+import { toast } from "sonner"
 
 export default function ChatPage() {
   const [selectedUserId, setSelectedUserId] = useState<string>("")
@@ -22,15 +23,43 @@ export default function ChatPage() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await getUsersAPI();
-      const userList = res.data?.result || [];
-      setUsers(userList)
-      if (userList.length > 0) setSelectedUserId(userList[0]._id)
+      try {
+        const res = await getUsersAPI()
+
+        if (res?.data?.result) {
+          const userList = res.data.result || []
+          setUsers(userList)
+          if (userList.length > 0) setSelectedUserId(userList[0]._id)
+        } else {
+          const errorMsg = Array.isArray(res.message)
+            ? res.message[0]
+            : res.message
+          toast.error(errorMsg || "Failed to load users.")
+        }
+      } catch (error: any) {
+        const errMsg =
+          error?.response?.data?.message || "An error occurred. Please try again."
+        toast.error(errMsg)
+      }
     }
 
     const fetchOnlineUsers = async () => {
-      const res = await getOnlineUsersAPI()
-      setOnlineUserIds(res.data?.online || [])
+      try {
+        const res = await getOnlineUsersAPI()
+
+        if (res?.data?.online) {
+          setOnlineUserIds(res.data.online || [])
+        } else {
+          const errorMsg = Array.isArray(res.message)
+            ? res.message[0]
+            : res.message
+          toast.error(errorMsg || "Failed to load online users.")
+        }
+      } catch (error: any) {
+        const errMsg =
+          error?.response?.data?.message || "An error occurred. Please try again."
+        toast.error(errMsg)
+      }
     }
 
     fetchUsers()
