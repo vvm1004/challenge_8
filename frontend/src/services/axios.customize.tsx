@@ -65,6 +65,7 @@ instance.interceptors.response.use(function (response) {
         && +error.response.status === 400
         && error.config.url === '/api/auth/refresh'
     ) {
+        localStorage.removeItem('access_token');
         if (
             window.location.pathname !== '/'
         ) {
